@@ -1,0 +1,54 @@
+plugins {
+	id 'org.springframework.boot' version '2.3.4.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+	id 'java'
+	id "org.openapi.generator" version "4.3.1"
+	id "com.github.dkorotych.gradle-maven-exec" version "2.2.1"
+}
+
+group = 'com.hse'
+version = '1.0.0'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+}
+
+task addDependency {
+	project.dependencies.ext.pluginDeps = {
+		project.fileTree("${rootDir}") {
+			include '/products-api/build/generated/server/target/api-server-1.0.0.jar'
+		}
+	}
+}
+
+
+dependencies {
+	compile group: 'org.modelmapper', name: 'modelmapper', version: '2.3.8'
+	implementation "org.springframework.cloud:spring-cloud-starter-openfeign:2.1.3.RELEASE"
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation "org.springframework.boot:spring-boot-starter-validation"
+	implementation 'org.flywaydb:flyway-core'
+	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'com.h2database:h2'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+	implementation 'junit:junit:4.12'
+	compile pluginDeps()
+}
+
+allprojects {
+	apply plugin: 'org.openapi.generator'
+	apply plugin: 'java'
+	apply plugin: "com.github.dkorotych.gradle-maven-exec"
+}
+
+test {
+	useJUnitPlatform()
+}
+
+tasks.addDependency.dependsOn(':products-api:build')
+build.dependsOn tasks.addDependency

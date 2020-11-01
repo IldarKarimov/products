@@ -1,0 +1,35 @@
+def apiSpecPath = "${rootDir}/products-api/products.yaml".toString()
+def apiVersion  = "1.0.0"
+
+def interfaceGroupId    = "com.hse.products"
+def generatedOutputDir  = "${buildDir}/generated"
+def serverArtifactId = "api-server"
+def serverGroupId    = "${interfaceGroupId}"
+def serverVersion    = apiVersion
+
+def serverConfig     = [ interfaceOnly: "true", skipDefaultInterface: "true", "serializationLibrary": "jackson"]
+
+task generateServer(type: org.openapitools.generator.gradle.plugin.tasks.GenerateTask){
+  generatorName  = "spring"
+  inputSpec      = "${apiSpecPath}".toString()
+  outputDir      = "${generatedOutputDir}/server".toString()
+
+  apiPackage     = "${serverGroupId}.api".toString()
+  invokerPackage = "${serverGroupId}.invoker".toString()
+  modelPackage   = "${serverGroupId}.model".toString()
+
+  groupId        = "${serverGroupId}".toString()
+  id             = "${serverArtifactId}".toString()
+  version        = "${serverVersion}".toString()
+
+  withXml        = true
+  configOptions  = [ artifactDescription: "Products API Server Interface" ] + serverConfig
+}
+
+task buildServer(type: MavenExec) {
+  workingDir "${generatedOutputDir}/server"
+  goals 'clean', 'package'
+}
+
+buildServer.dependsOn tasks.generateServer
+build.dependsOn tasks.buildServer

@@ -1,0 +1,625 @@
+openapi: 3.0.0
+info:
+  title: products
+  description: Products and categories API
+  version: "1.0.0"
+  contact:
+    email: ildarrkarimov@gmail.com
+servers:
+  - url: 'http://localhost:8080'
+paths:
+  "/products":
+    post:
+      tags:
+        - Products
+      summary: Add a new product
+      description: Returns created product
+      operationId: addProduct
+      requestBody:
+        $ref: "#/components/requestBodies/ProductDTO"
+      responses:
+        '200':
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '500':
+          description: Internal server error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+    get:
+      tags:
+        - Products
+      summary: Find products by category
+      description: Returns all products for specified category
+      operationId: getProductsByCategoryId
+      parameters:
+        - name: categoryId
+          in: query
+          description: 'Category ID'
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Products information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Products'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '404':
+          description: Not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '500':
+          description: Internal server error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+  "/products/{id}/full":
+    get:
+      tags:
+        - Products
+      summary: Find product by ID
+      description: Returns a signle product and categoryTree
+      operationId: getFullProductById
+      parameters:
+        - name: id
+          in: path
+          description: 'Product id'
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: currency
+          in: query
+          description: 'Desired currency to be displayed'
+          required: false
+          schema:
+            $ref: '#/components/schemas/CurrencyEnum'
+      responses:
+        '200':
+          description: Product and category tree information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FullProductDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '404':
+          description: Not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '500':
+          description: Internal server error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+  "/products/{id}":
+    get:
+      tags:
+        - Products
+      summary: Find product by ID
+      description: Returns a signle product
+      operationId: getProductById
+      parameters:
+        - name: id
+          in: path
+          description: 'Product id'
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: currency
+          in: query
+          description: 'Desired currency to be displayed'
+          required: false
+          schema:
+            $ref: '#/components/schemas/CurrencyEnum'
+      responses:
+        '200':
+          description: Product information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '404':
+          description: Not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '500':
+          description: Internal server error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+    put:
+      tags:
+        - Products
+      summary: Update product
+      description: Returns a single product
+      operationId: updateProductById
+      requestBody:
+        $ref: "#/components/requestBodies/ProductDTO"
+      parameters:
+        - name: id
+          in: path
+          description: 'Product id'
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Product updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '404':
+          description: Not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '500':
+          description: Internal server error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+    delete:
+      tags:
+        - Products
+      summary: Delete product by ID
+      description: Removes a signle product
+      operationId: deleteProductById
+      parameters:
+        - name: id
+          in: path
+          description: 'Product id'
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Product deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '404':
+          description: Not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '500':
+          description: Internal server error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+  "/categories/{id}/tree":
+    get:
+      tags:
+        - Categories
+      summary: Find category tree
+      description: Returns category tree for specified category
+      operationId: getCategoryTree
+      parameters:
+        - name: id
+          in: path
+          description: 'Category id'
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Categories information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryTree'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '404':
+          description: Not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '500':
+          description: Internal server error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+  "/categories/parents":
+    get:
+      tags:
+        - Categories
+      summary: Find parent categories
+      description: Returns all parent categories
+      operationId: getParents
+      responses:
+        '200':
+          description: Categories information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categories'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '404':
+          description: Not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '500':
+          description: Internal server error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+  "/categories/{id}/childs":
+    get:
+      tags:
+        - Categories
+      summary: Find child categories by parent ID
+      description: Returns all child categories
+      operationId: getChildsByParentId
+      parameters:
+        - name: id
+          in: path
+          description: 'Parent category id'
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Categories information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categories'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '404':
+          description: Not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '500':
+          description: Internal server error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+  "/categories":
+    post:
+      tags:
+        - Categories
+      summary: Add a new category
+      description: Returns created category
+      operationId: addCategory
+      requestBody:
+        $ref: "#/components/requestBodies/CategoryDTO"
+      responses:
+        '200':
+          description: Category created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '500':
+          description: Internal server error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+  "/categories/{id}":
+    get:
+      tags:
+        - Categories
+      summary: Find category by ID
+      description: Returns a signle category
+      operationId: getCategoryById
+      parameters:
+        - name: id
+          in: path
+          description: 'Category id'
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Category information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '404':
+          description: Not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '500':
+          description: Internal server error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+    put:
+      tags:
+        - Categories
+      summary: Update category
+      description: Returns a single category
+      operationId: updateCategoryById
+      requestBody:
+        $ref: "#/components/requestBodies/CategoryDTO"
+      parameters:
+        - name: id
+          in: path
+          description: 'Category id'
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Category updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '404':
+          description: Not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '500':
+          description: Internal server error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+    delete:
+      tags:
+        - Categories
+      summary: Delete category by ID
+      description: Removes a signle category
+      operationId: deleteCategoryById
+      parameters:
+        - name: id
+          in: path
+          description: 'Category id'
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Category deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryDTO'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '404':
+          description: Not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '500':
+          description: Internal server error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+components:
+  requestBodies:
+    ProductDTO:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProductDTO'
+      description: Product
+      required: true
+    CategoryDTO:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CategoryDTO'
+      description: Category
+      required: true
+  schemas:
+    Products:
+      type: array
+      items:
+        $ref: '#/components/schemas/ProductDTO'
+    ProductDTO:
+      type: object
+      required:
+        - name
+        - price
+        - categoryId
+        - currency
+      properties:
+        id:
+          description: Unique auto generated product key
+          type: integer
+          format: int64
+          example: 123
+        name:
+          description: Product name
+          type: string
+          minLength: 7
+          maxLength: 100
+          example: Iphone 12
+        price:
+          description: Product price
+          type: number
+          format: double
+          example: 25.99
+        currency:
+          $ref: '#/components/schemas/CurrencyEnum'
+        categoryId:
+          description: Product category id
+          type: integer
+          format: int64
+          example: 222
+    CurrencyEnum:
+      description: Currency enumeration
+      example: 'EUR'
+      type: string
+      enum:
+        - EUR
+        - USD
+        - GBP
+    Categories:
+      type: array
+      items:
+        $ref: '#/components/schemas/CategoryDTO'
+    CategoryDTO:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          description: Unique auto generated category key
+          type: integer
+          format: int64
+          example: 123
+        name:
+          description: Category name
+          type: string
+          minLength: 7
+          maxLength: 100
+          example: Apple mobile phone
+        parentId:
+          description: Parent category id
+          type: integer
+          format: int64
+          example: 222
+    CategoryTree:
+      type: object
+      properties:
+        CategoryDTO:
+          $ref: '#/components/schemas/CategoryDTO'
+        children:
+          $ref: '#/components/schemas/CategoryTree'
+    FullProductDTO:
+      type: object
+      properties:
+        ProductDTO:
+          $ref: '#/components/schemas/ProductDTO'
+        CategoryTree:
+          $ref: '#/components/schemas/CategoryTree'
+    Errors:
+      type: array
+      items:
+        $ref: '#/components/schemas/Error'
+    Error:
+      type: object
+      required:
+        - key
+        - detail
+      properties:
+        key:
+          type: string
+        detail:
+          type: string
+      example:
+        key: 'NotFound'
+        detail: 'Product with ID 1 not found'

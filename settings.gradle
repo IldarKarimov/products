@@ -1,0 +1,3 @@
+include 'products-api'
+
+rootProject.name = 'products'
